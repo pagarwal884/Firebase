@@ -1,54 +1,82 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { GraduationCap, Code, BrainCircuit, Laptop } from "lucide-react";
+import {
+  GraduationCap,
+  Code,
+  BrainCircuit,
+  Laptop,
+} from "lucide-react";
 
 const criteria = [
   {
-    icon: <GraduationCap className="w-8 h-8 text-primary" />,
+    icon: GraduationCap,
     title: "Students & Graduates",
-    description: "Currently enrolled students or recent graduates from any field.",
+    description:
+      "Currently enrolled students or recent graduates from any academic background.",
   },
   {
-    icon: <Code className="w-8 h-8 text-primary" />,
+    icon: Code,
     title: "Basic Skills",
-    description: "Fundamental programming or analytical skills are required.",
+    description:
+      "Foundational programming, data, or analytical skills are expected.",
   },
   {
-    icon: <BrainCircuit className="w-8 h-8 text-primary" />,
+    icon: BrainCircuit,
     title: "Passion for Tech",
-    description: "A strong interest in data, AI, or software development.",
+    description:
+      "Strong interest in data science, AI, or software development.",
   },
   {
-    icon: <Laptop className="w-8 h-8 text-primary" />,
+    icon: Laptop,
     title: "Required Equipment",
-    description: "Access to a laptop and a stable internet connection.",
+    description:
+      "A personal laptop and reliable internet connection.",
   },
 ];
 
 export function Eligibility() {
   return (
-    <section id="eligibility" className="py-16 md:py-24 bg-secondary">
-      <div className="container">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">Who Can Apply?</h2>
+    <section
+      id="eligibility"
+      className="py-20 md:py-28 bg-secondary"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">
+            Who Can Apply?
+          </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            We are looking for enthusiastic learners who are eager to make their mark in the tech industry.
+            We’re looking for motivated learners who are ready to grow and build
+            meaningful tech experience.
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {criteria.map((item, index) => (
-            <Card key={index} className="text-center">
-              <CardHeader>
-                <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit">
-                    {item.icon}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardTitle className="text-lg mb-2">{item.title}</CardTitle>
-                <p className="text-muted-foreground text-sm">{item.description}</p>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Cards */}
+        <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {criteria.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <Card
+                key={index}
+                className="group h-full text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+              >
+                <CardHeader className="flex flex-col items-center gap-4 p-6">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                    <Icon className="h-7 w-7 text-primary" />
+                  </div>
+                  <CardTitle className="text-lg">
+                    {item.title}
+                  </CardTitle>
+                </CardHeader>
+
+                <CardContent className="px-6 pb-6 pt-0">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {item.description}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </section>
