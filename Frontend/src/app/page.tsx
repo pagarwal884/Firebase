@@ -8,6 +8,8 @@ import { Internships } from '@/components/sections/internships';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 
+export const backendurl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function Home() {
   return (
     <div className="flex min-h-dvh flex-col bg-background">
