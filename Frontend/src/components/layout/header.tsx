@@ -34,14 +34,6 @@ export function Header() {
             </a>
           ))}
         </nav>
-        <div className="ml-4 hidden md:flex items-center gap-2">
-            <Button variant="ghost" asChild>
-                <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild>
-                <Link href="/register">Register</Link>
-            </Button>
-        </div>
 
         <div className="ml-auto flex items-center md:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -64,14 +56,6 @@ export function Header() {
                     {link.label}
                   </a>
                 ))}
-                <div className='flex flex-col gap-2 pt-4'>
-                    <Button variant="ghost" asChild>
-                        <Link href="/login" onClick={() => setIsOpen(false)}>Login</Link>
-                    </Button>
-                    <Button asChild>
-                        <Link href="/register" onClick={() => setIsOpen(false)}>Register</Link>
-                    </Button>
-                </div>
               </div>
             </SheetContent>
           </Sheet>

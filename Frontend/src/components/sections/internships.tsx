@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Database, AreaChart, Cpu, Globe, Server, Bot } from "lucide-react";
-import { DomainSuggester } from "../domain-suggester";
+// import { DomainSuggester } from "../domain-suggester";
 
 const domains = [
   {
@@ -53,23 +53,6 @@ export function Internships() {
               </CardContent>
             </Card>
           ))}
-        </div>
-
-        <div className="mt-20">
-            <Card className="max-w-4xl mx-auto">
-                <CardHeader>
-                    <div className="flex items-center gap-4">
-                        <Bot className="w-8 h-8 text-primary"/>
-                        <div>
-                            <CardTitle>Find Your Perfect Internship Domain</CardTitle>
-                            <CardDescription>Use our AI tool to get personalized suggestions.</CardDescription>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <DomainSuggester />
-                </CardContent>
-            </Card>
         </div>
       </div>
     </section>

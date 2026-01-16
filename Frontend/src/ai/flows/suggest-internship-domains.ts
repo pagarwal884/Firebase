@@ -1,46 +1,97 @@
 'use server';
 /**
- * @fileOverview This file defines a Genkit flow for suggesting internship domains based on user input.
- *
- * The flow takes background, interests, and resume information as input and returns a list of suggested internship domains.
- *
- * - suggestInternshipDomains - A function that calls the suggestInternshipDomainsFlow to get internship domain suggestions.
- * - SuggestInternshipDomainsInput - The input type for the suggestInternshipDomains function.
- * - SuggestInternshipDomainsOutput - The output type for the suggestInternshipDomains function.
+ * @fileOverview Genkit flow for suggesting internship domains and companies
+ * strictly based on the attached CV (single source of truth).
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const SuggestInternshipDomainsInputSchema = z.object({
-  background: z.string().describe('The applicant\'s educational and professional background.'),
-  interests: z.string().describe('The applicant\'s interests and skills.'),
-  resume: z.string().describe('The applicant\'s resume information.'),
+  resume: z.string().describe(
+    'The full extracted text of the applicant’s CV. This is the ONLY source of truth.'
+  ),
 });
-export type SuggestInternshipDomainsInput = z.infer<typeof SuggestInternshipDomainsInputSchema>;
+
+export type SuggestInternshipDomainsInput = z.infer<
+  typeof SuggestInternshipDomainsInputSchema
+>;
 
 const SuggestInternshipDomainsOutputSchema = z.object({
-  suggestions: z.array(z.string()).describe('A list of suggested internship domains.'),
+  results: z.array(
+    z.object({
+      company: z.string(),
+      role: z.string(),
+      cvMatchReason: z.string(),
+      skillsRequired: z.string(),
+      location: z.string(),
+      directCareerLink: z.string(),
+    })
+  ),
 });
-export type SuggestInternshipDomainsOutput = z.infer<typeof SuggestInternshipDomainsOutputSchema>;
 
-export async function suggestInternshipDomains(input: SuggestInternshipDomainsInput): Promise<SuggestInternshipDomainsOutput> {
+export type SuggestInternshipDomainsOutput = z.infer<
+  typeof SuggestInternshipDomainsOutputSchema
+>;
+
+export async function suggestInternshipDomains(
+  input: SuggestInternshipDomainsInput
+): Promise<SuggestInternshipDomainsOutput> {
   return suggestInternshipDomainsFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'suggestInternshipDomainsPrompt',
-  input: {schema: SuggestInternshipDomainsInputSchema},
-  output: {schema: SuggestInternshipDomainsOutputSchema},
-  prompt: `You are an expert career advisor specializing in internship placements.
+  name: 'strictInternshipMatcherPrompt',
+  input: { schema: SuggestInternshipDomainsInputSchema },
+  output: { schema: SuggestInternshipDomainsOutputSchema },
+  prompt: `
+You are acting as a senior technical recruiter and hiring researcher.
 
-  Based on the following information about the applicant, suggest a list of relevant internship domains.
+Analyze the ATTACHED CV in depth.
+The CV is the ONLY source of truth.
+Do NOT infer, assume, or add any skills, tools, experience, or interests
+that are not explicitly mentioned in the CV.
 
-  Background: {{{background}}}
-  Interests: {{{interests}}}
-  Resume: {{{resume}}}
+OBJECTIVE:
+Identify internship opportunities that are a strong, realistic match
+for the candidate’s current skills, projects, and experience level.
 
-  Please provide a list of internship domains that would be a good fit for the applicant.  The list should contain no more than 5 items.`,
+STRICT NON-NEGOTIABLE RULES:
+1. Suggest ONLY real, legitimate companies.
+2. Provide ONLY OFFICIAL COMPANY CAREER PAGE LINKS.
+   ❌ No Internshala
+   ❌ No Unstop
+   ❌ No LinkedIn Jobs
+   ❌ No Indeed / Naukri / any job aggregator
+   ✅ Links must belong to the company’s own domain
+3. Do NOT fabricate roles, companies, or links.
+4. If a specific internship is not currently listed,
+   provide the official career page where such internships are usually posted.
+5. Quality over quantity — exclude companies that are not a strong CV match.
+
+FOR EACH COMPANY, INCLUDE:
+- Company Name
+- Internship Role (exact title or closest realistic role)
+- Why this role matches the CV (1–2 lines referencing CV content)
+- Required / preferred skills (from job description if available)
+- Location (Remote / India / Hybrid if known)
+- DIRECT application link (official company site only)
+
+PRIORITY FILTERS:
+- Entry-level / student-friendly internships
+- Product-based companies or tech-driven startups
+- Roles aligned strictly with the CV (no stretch roles)
+- Remote or India-based roles preferred
+
+FINAL VERIFICATION STEP (MANDATORY):
+Before responding:
+- Recheck that every link is an official company domain
+- Ensure no third-party platforms are included
+- Confirm each company genuinely aligns with the CV
+
+CV TEXT:
+{{{resume}}}
+`,
 });
 
 const suggestInternshipDomainsFlow = ai.defineFlow(
@@ -49,8 +100,8 @@ const suggestInternshipDomainsFlow = ai.defineFlow(
     inputSchema: SuggestInternshipDomainsInputSchema,
     outputSchema: SuggestInternshipDomainsOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const { output } = await prompt(input);
     return output!;
   }
 );
